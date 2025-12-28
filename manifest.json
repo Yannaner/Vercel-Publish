@@ -1,11 +1,10 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "vaultsite",
+	"name": "VaultSite",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Turn your Obsidian vault into a browsable website hosted on Vercel with one-command publish.",
+	"author": "VaultSite Contributors",
+	"authorUrl": "https://github.com/vaultsite/vaultsite",
 	"isDesktopOnly": false
 }

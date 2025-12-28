@@ -1,8 +1,89 @@
-/*
+/* VaultSite Plugin Styles */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+/* Setup Wizard Modal */
+.setup-wizard-step {
+  margin: 30px 0;
+  padding: 20px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-secondary);
+}
 
-If your plugin does not need CSS, delete this file.
+.setup-wizard-step h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--text-normal);
+  font-size: 18px;
+}
 
-*/
+.setup-wizard-step p {
+  margin: 10px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.setup-wizard-step pre {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 12px;
+  margin: 12px 0;
+  overflow-x: auto;
+}
+
+.setup-wizard-step code {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--text-normal);
+}
+
+.setup-instructions {
+  margin: 12px 0;
+  padding: 12px;
+  background: var(--background-primary);
+  border-left: 3px solid var(--interactive-accent);
+  border-radius: 4px;
+}
+
+.setup-instructions ol {
+  margin: 8px 0 0 20px;
+  padding: 0;
+}
+
+.setup-instructions li {
+  margin: 6px 0;
+  color: var(--text-normal);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.vaultsite-success {
+  color: var(--text-success) !important;
+  font-weight: 500;
+}
+
+.vaultsite-warning {
+  color: var(--text-warning) !important;
+  font-weight: 500;
+}
+
+.vaultsite-error {
+  color: var(--text-error) !important;
+  font-weight: 500;
+}
+
+.setup-wizard-complete {
+  margin: 30px 0;
+  padding: 24px;
+  border: 2px solid var(--interactive-accent);
+  border-radius: 8px;
+  background: var(--background-secondary);
+  text-align: center;
+}
+
+.setup-wizard-complete h3 {
+  margin-top: 0;
+  color: var(--interactive-accent);
+  font-size: 24px;
+}

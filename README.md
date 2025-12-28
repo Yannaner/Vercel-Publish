@@ -1,90 +1,132 @@
-# Obsidian Sample Plugin
+# VaultSite
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+**Turn your Obsidian vault into a browsable website hosted on Vercel.**
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+VaultSite is an Obsidian plugin that generates a Next.js website from your notes and publishes it to Vercel with a single command.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## What It Does
 
-## First time developing plugins?
+VaultSite creates a `/site` directory in your vault containing a complete Next.js application. When you sync your notes, they're copied into the site with wikilinks converted to proper markdown links. Push to GitHub, and Vercel automatically deploys your browsable notes website.
 
-Quick starting guide for new plugin devs:
+## Features
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+- **One-Command Publish**: Sync notes and push to GitHub with a single command
+- **Guided Setup Wizard**: Step-by-step setup for non-technical users
+- **Wikilink Conversion**: Automatically converts `[[Note]]` links to proper markdown
+- **Folder Sidebar**: Browse your notes with a collapsible folder tree
+- **No Hosting Required**: Uses GitHub + Vercel (both free for public repos)
+- **Privacy-First**: Exclude private folders by default
+- **Static Export**: Fast, secure static site generation
 
-## Releasing new releases
+## Quick Start
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+### 1. Run the Setup Wizard
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+Open the command palette (Cmd/Ctrl+P) and run:
 
-## Adding your plugin to the community plugin list
+```
+VaultSite: Setup Wizard
+```
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+The wizard will guide you through creating the website, connecting GitHub, and deploying to Vercel.
 
-## How to use
+### 2. Publish Your Notes
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+After setup, just run:
 
-## Manually installing the plugin
+```
+VaultSite: Publish (Sync + Push)
+```
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+This syncs your notes and pushes to GitHub. Vercel automatically deploys!
 
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
+## Configuration
 
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+Edit `publish.config.json` in your vault root:
 
 ```json
 {
-    "fundingUrl": "https://buymeacoffee.com"
+  "include": ["notes"],
+  "exclude": [".obsidian", "site", "private", "journal"],
+  "siteDir": "site",
+  "contentDir": "site/content",
+  "assetsDir": "site/public/assets",
+  "baseRoute": "/notes",
+  "slugStyle": "kebab"
 }
 ```
 
-If you have multiple URLs, you can also do:
+## Vercel Setup
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+**IMPORTANT**: When connecting to Vercel, set **Root Directory** to `site`
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import your GitHub repository
+3. Set Root Directory to `site`
+4. Deploy
+
+After first deploy, paste your website URL into the plugin settings.
+
+## Privacy
+
+Only notes in your `include` paths are synced. By default, these folders are excluded:
+- `.obsidian/`
+- `site/`
+- `private/`
+- `journal/`
+
+Add any sensitive folders to the `exclude` list in `publish.config.json`.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `VaultSite: Setup Wizard` | Guided setup wizard |
+| `VaultSite: Initialize Website` | Create `/site` directory |
+| `VaultSite: Sync Notes` | Copy notes to `/site/content` |
+| `VaultSite: Publish (Sync + Push)` | Sync and push to GitHub |
+
+## How It Works
+
+1. Plugin generates a Next.js site in `/site`
+2. Sync copies notes into `/site/content` with converted links
+3. Git push triggers Vercel webhook
+4. Vercel builds and deploys automatically
+
+## Troubleshooting
+
+### "Not a git repository"
+
+Run in your vault:
+```bash
+git init
+git add -A
+git commit -m "Initial commit"
 ```
 
-## API Documentation
+### "No git remote configured"
 
-See https://docs.obsidian.md
+Run:
+```bash
+git remote add origin https://github.com/username/repo
+```
+
+### Vercel build fails
+
+Make sure Root Directory is set to `site` in Vercel project settings.
+
+## Development
+
+To test locally:
+
+```bash
+cd <vault>/site
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+## License
+
+MIT
