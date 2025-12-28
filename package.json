@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-vercel-publish",
-	"version": "0.1.0",
-	"description": "Turn your Obsidian vault into a browsable website hosted on Vercel",
+	"version": "1.0.0",
+	"description": "Turn your vault into a browsable website hosted on Vercel",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {

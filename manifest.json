@@ -1,10 +1,10 @@
 {
 	"id": "vercel-publish",
 	"name": "Vercel Publish",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Turn your Obsidian vault into a browsable website hosted on Vercel with one-command publish.",
+	"description": "Turn your vault into a browsable website hosted on Vercel with one-command publish.",
 	"author": "Yannaner",
-	"authorUrl": "https://github.com/Yannaner/Vercel-Publish",
+	"authorUrl": "https://github.com/Yannaner",
 	"isDesktopOnly": false
 }

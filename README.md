@@ -4,8 +4,8 @@
 
 **Transform your Obsidian vault into a beautiful, published website with one command**
 
-[![GitHub release](https://img.shields.io/github/v/release/vercel-publish/vercel-publish?style=for-the-badge)](https://github.com/vercel-publish/vercel-publish/releases)
-[![License](https://img.shields.io/github/license/vercel-publish/vercel-publish?style=for-the-badge)](LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/Yannaner/Vercel-Publish?style=for-the-badge)](https://github.com/Yannaner/Vercel-Publish/releases)
+[![License](https://img.shields.io/github/license/Yannaner/Vercel-Publish?style=for-the-badge)](LICENSE)
 [![Obsidian Downloads](https://img.shields.io/badge/dynamic/json?logo=obsidian&color=%23483699&label=downloads&query=%24%5B%22vercel-publish%22%5D.downloads&url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&style=for-the-badge)](https://obsidian.md/plugins?id=vercel-publish)
 
 [Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
@@ -71,7 +71,7 @@ Vercel Publish is an Obsidian plugin that seamlessly transforms your personal kn
 
 ### Manual Installation
 
-1. Download the latest release from [GitHub Releases](https://github.com/vercel-publish/vercel-publish/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/Yannaner/Vercel-Publish/releases)
 2. Extract the files to your vault's plugins folder: `<vault>/.obsidian/plugins/vercel-publish/`
 3. Reload Obsidian
 4. Enable the plugin in Settings → Community Plugins
@@ -287,8 +287,8 @@ We're always looking for ways to improve! Open an issue with:
 
 ```bash
 # Clone the repo
-git clone https://github.com/vercel-publish/vercel-publish.git
-cd vercel-publish
+git clone https://github.com/Yannaner/Vercel-Publish.git
+cd Vercel-Publish
 
 # Install dependencies
 npm install
