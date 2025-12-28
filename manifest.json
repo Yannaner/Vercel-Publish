@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
 	"description": "Turn your Obsidian vault into a browsable website hosted on Vercel with one-command publish.",
-	"author": "Vercel Publish Contributors",
-	"authorUrl": "https://github.com/vercel-publish/vercel-publish",
+	"author": "Yannaner",
+	"authorUrl": "https://github.com/Yannaner/Vercel-Publish",
 	"isDesktopOnly": false
 }

@@ -14,26 +14,26 @@
 
 ---
 
-## 🌟 Overview
+## Overview
 
 Vercel Publish is an Obsidian plugin that seamlessly transforms your personal knowledge base into a professional website. With a single command, your notes are synced, optimized, and deployed to Vercel—perfect for digital gardens, documentation sites, or public knowledge bases.
 
 ### Why Vercel Publish?
 
-- 🚀 **One-Click Publishing** - Sync and deploy in seconds
-- 🎨 **Beautiful UI** - Modern Next.js template with dark mode support
-- 🔍 **Full-Text Search** - Find notes instantly with built-in search
-- 📁 **Folder Structure** - Maintains your vault organization
-- 🔗 **Smart Link Conversion** - Wikilinks automatically converted to web-friendly URLs
-- 🔒 **Privacy First** - Choose exactly what to publish
-- 💰 **Free Hosting** - Deploy to Vercel at no cost
-- ⚡ **Lightning Fast** - Static site generation for optimal performance
+- **One-Click Publishing** - Sync and deploy in seconds
+- **Beautiful UI** - Modern Next.js template with dark mode support
+- **Full-Text Search** - Find notes instantly with built-in search
+- **Folder Structure** - Maintains your vault organization
+- **Smart Link Conversion** - Wikilinks automatically converted to web-friendly URLs
+- **Privacy First** - Choose exactly what to publish
+- **Free Hosting** - Deploy to Vercel at no cost
+- **Lightning Fast** - Static site generation for optimal performance
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎯 Core Features
+### Core Features
 
 | Feature | Description |
 |---------|-------------|
@@ -45,13 +45,13 @@ Vercel Publish is an Obsidian plugin that seamlessly transforms your personal kn
 | **Search** | Real-time search across all published notes |
 | **Template Updates** | Update your site template while preserving content |
 
-### 🛡️ Privacy & Control
+### Privacy & Control
 
 - **Selective Publishing** - Choose which folders to include/exclude
 - **Default Exclusions** - `.obsidian`, `private`, `journal` folders excluded by default
 - **Custom Configuration** - Fine-grained control via `publish.config.json`
 
-### 🎨 Modern Tech Stack
+### Modern Tech Stack
 
 - **Next.js 15** - React framework with App Router
 - **TypeScript** - Type-safe development
@@ -60,7 +60,7 @@ Vercel Publish is an Obsidian plugin that seamlessly transforms your personal kn
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### From Obsidian Community Plugins
 
@@ -78,9 +78,9 @@ Vercel Publish is an Obsidian plugin that seamlessly transforms your personal kn
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### 1️⃣ Initialize Your Website
+### 1. Initialize Your Website
 
 Open the command palette (`Cmd/Ctrl+P`) and run:
 
@@ -89,11 +89,11 @@ Vercel Publish: Setup Wizard
 ```
 
 The wizard will:
-- ✅ Create a `/site` directory with a Next.js template
-- ✅ Generate `publish.config.json` for customization
-- ✅ Guide you through GitHub and Vercel setup
+- Create a `/site` directory with a Next.js template
+- Generate `publish.config.json` for customization
+- Guide you through GitHub and Vercel setup
 
-### 2️⃣ Configure What to Publish
+### 2. Configure What to Publish
 
 Edit `publish.config.json` in your vault root:
 
@@ -109,9 +109,9 @@ Edit `publish.config.json` in your vault root:
 }
 ```
 
-> **💡 Tip**: Leave `include` empty to publish all notes. Notes outside the `site` folder will automatically be synced.
+> **Tip**: Leave `include` empty to publish all notes. Notes outside the `site` folder will automatically be synced.
 
-### 3️⃣ Publish Your Notes
+### 3. Publish Your Notes
 
 Run the publish command:
 
@@ -125,18 +125,18 @@ This command:
 3. Commits and pushes to GitHub
 4. Triggers automatic Vercel deployment
 
-### 4️⃣ Deploy to Vercel
+### 4. Deploy to Vercel
 
 1. Go to [vercel.com/new](https://vercel.com/new)
 2. Import your GitHub repository
 3. **Important**: Set **Root Directory** to `site`
 4. Click **Deploy**
 
-Your site will be live in minutes! 🎉
+Your site will be live in minutes!
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 ### Available Commands
 
@@ -182,7 +182,7 @@ graph LR
 
 ---
 
-## 🎨 Customization
+## Customization
 
 ### Update Site Template
 
@@ -212,7 +212,7 @@ Open [http://localhost:3000](http://localhost:3000) to preview.
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Notes Not Syncing
 
@@ -241,9 +241,9 @@ git remote add origin https://github.com/username/repo.git
 
 ### Vercel Build Fails
 
-- ✅ Verify **Root Directory** is set to `site` in Vercel project settings
-- ✅ Check build logs in Vercel dashboard
-- ✅ Ensure `site/package.json` exists and has correct dependencies
+- Verify **Root Directory** is set to `site` in Vercel project settings
+- Check build logs in Vercel dashboard
+- Ensure `site/package.json` exists and has correct dependencies
 
 ### Dev Mode Errors
 
@@ -254,7 +254,7 @@ If you see errors like "missing param" in dev mode:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We love contributions! Here's how you can help:
 
@@ -302,13 +302,13 @@ npm run dev
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with [Obsidian Plugin API](https://github.com/obsidianmd/obsidian-api)
 - Powered by [Next.js](https://nextjs.org/)
@@ -317,19 +317,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 💬 Community & Support
+## Community & Support
 
-- 💬 [GitHub Discussions](https://github.com/vercel-publish/vercel-publish/discussions) - Ask questions and share ideas
-- 🐛 [Issue Tracker](https://github.com/vercel-publish/vercel-publish/issues) - Report bugs and request features
-- 📧 Email: support@vercel-publish.dev
-- 🌟 Star this repo if you find it useful!
+- [GitHub Discussions](https://github.com/vercel-publish/vercel-publish/discussions) - Ask questions and share ideas
+- [Issue Tracker](https://github.com/vercel-publish/vercel-publish/issues) - Report bugs and request features
+- Email: support@vercel-publish.dev
+- Star this repo if you find it useful!
 
 ---
 
 <div align="center">
 
-**[⬆ Back to Top](#vercel-publish-for-obsidian)**
+**[Back to Top](#vercel-publish-for-obsidian)**
 
-Made with ❤️ by the Vercel Publish community
+Made with love by the Vercel Publish community
 
 </div>
