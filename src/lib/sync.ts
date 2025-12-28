@@ -113,10 +113,4 @@ export class SyncEngine {
     // Write file
     await this.fsUtil.writeFile(destPath, rewrittenContent);
   }
-
-  async copyAssets(): Promise<void> {
-    // TODO: Implement asset copying for images
-    // For MVP, this is optional
-    new Notice('Asset copying not yet implemented');
-  }
 }

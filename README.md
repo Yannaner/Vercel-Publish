@@ -317,19 +317,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## Community & Support
-
-- [GitHub Discussions](https://github.com/vercel-publish/vercel-publish/discussions) - Ask questions and share ideas
-- [Issue Tracker](https://github.com/vercel-publish/vercel-publish/issues) - Report bugs and request features
-- Email: support@vercel-publish.dev
-- Star this repo if you find it useful!
-
----
-
 <div align="center">
 
 **[Back to Top](#vercel-publish-for-obsidian)**
 
-Made with love by the Vercel Publish community
+Made by Ian
 
 </div>
