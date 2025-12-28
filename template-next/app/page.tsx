@@ -31,13 +31,13 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="empty-state">
-            <h1>Welcome to VaultSite</h1>
-            <p>No notes found. Use the VaultSite plugin to sync your notes.</p>
+            <h1>Welcome to Vercel Publish</h1>
+            <p>No notes found. Use the Vercel Publish plugin to sync your notes.</p>
             <div className="instructions">
               <h2>Getting Started</h2>
               <ol>
-                <li>Open Obsidian and install the VaultSite plugin</li>
-                <li>Run the command: <code>VaultSite: Sync Notes</code></li>
+                <li>Open Obsidian and install the Vercel Publish plugin</li>
+                <li>Run the command: <code>Vercel Publish: Sync Notes</code></li>
                 <li>Your notes will appear here automatically</li>
               </ol>
             </div>

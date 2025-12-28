@@ -20,22 +20,29 @@ export class SyncEngine {
     try {
       // Get all markdown files
       const markdownFiles = this.app.vault.getMarkdownFiles();
-      console.log('VaultSite: Total markdown files:', markdownFiles.length);
-      console.log('VaultSite: Files:', markdownFiles.map(f => f.path));
-      console.log('VaultSite: Config:', this.config);
+      console.log('Vercel Publish: Total markdown files:', markdownFiles.length);
+      console.log('Vercel Publish: Files:', markdownFiles.map(f => f.path));
+      console.log('Vercel Publish: Config:', this.config);
 
       // Filter files based on include/exclude
       const filesToSync = markdownFiles.filter(file => {
         const shouldSync = this.shouldSyncFile(file.path);
-        console.log(`VaultSite: ${file.path} -> ${shouldSync ? 'SYNC' : 'SKIP'}`);
+        console.log(`Vercel Publish: ${file.path} -> ${shouldSync ? 'SYNC' : 'SKIP'}`);
         return shouldSync;
       });
 
       if (filesToSync.length === 0) {
         notice.hide();
-        new Notice('No notes to sync. Check your include/exclude settings.');
-        console.error('VaultSite: No files matched include/exclude filters');
+        new Notice('No notes found to sync.');
+        new Notice('Notes outside the site folder will be synced. Check your exclude settings in publish.config.json if needed.');
+        console.error('Vercel Publish: No files matched include/exclude filters');
         return { synced: 0, skipped: markdownFiles.length };
+      }
+
+      // Show what will be synced
+      const outsideSiteFiles = filesToSync.filter(f => !f.path.startsWith('site/'));
+      if (outsideSiteFiles.length > 0) {
+        console.log(`Vercel Publish: Found ${outsideSiteFiles.length} notes outside site folder:`, outsideSiteFiles.map(f => f.path));
       }
 
       // Clear content directory
@@ -68,17 +75,19 @@ export class SyncEngine {
     // Check excludes first
     const isExcluded = this.fsUtil.isPathExcluded(filePath, this.config.exclude);
     if (isExcluded) {
-      console.log(`VaultSite: ${filePath} excluded`);
+      console.log(`Vercel Publish: ${filePath} excluded`);
       return false;
     }
 
     // Check includes
     if (this.config.include.length > 0) {
       const isIncluded = this.fsUtil.isPathIncluded(filePath, this.config.include);
-      console.log(`VaultSite: ${filePath} include check: ${isIncluded}`);
+      console.log(`Vercel Publish: ${filePath} include check: ${isIncluded}`);
       return isIncluded;
     }
 
+    // If no includes specified, include all (that aren't excluded)
+    console.log(`Vercel Publish: ${filePath} included (no include filter)`);
     return true;
   }
 

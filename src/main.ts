@@ -23,7 +23,7 @@ export default class VaultSitePlugin extends Plugin {
 
 		// Add commands
 		this.addCommand({
-			id: 'vaultsite-setup-wizard',
+			id: 'vercel-publish-setup-wizard',
 			name: 'Setup Wizard',
 			callback: () => {
 				new SetupWizardModal(this.app, this).open();
@@ -31,7 +31,7 @@ export default class VaultSitePlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'vaultsite-initialize-website',
+			id: 'vercel-publish-initialize-website',
 			name: 'Initialize Website',
 			callback: async () => {
 				await this.initializeWebsite();
@@ -39,7 +39,7 @@ export default class VaultSitePlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'vaultsite-sync-notes',
+			id: 'vercel-publish-sync-notes',
 			name: 'Sync Notes',
 			callback: async () => {
 				await this.syncNotes();
@@ -47,21 +47,37 @@ export default class VaultSitePlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'vaultsite-publish',
+			id: 'vercel-publish-publish',
 			name: 'Publish (Sync + Push)',
 			callback: async () => {
 				await this.publish();
 			}
 		});
 
+		this.addCommand({
+			id: 'vercel-publish-update-template',
+			name: 'Update Template',
+			callback: async () => {
+				await this.updateTemplate();
+			}
+		});
+
+		this.addCommand({
+			id: 'vercel-publish-show-config',
+			name: 'Show Current Config',
+			callback: async () => {
+				await this.showConfig();
+			}
+		});
+
 		// Add settings tab
 		this.addSettingTab(new VaultSiteSettingTab(this.app, this));
 
-		console.log('VaultSite plugin loaded');
+		console.log('Vercel Publish plugin loaded');
 	}
 
 	onunload() {
-		console.log('VaultSite plugin unloaded');
+		console.log('Vercel Publish plugin unloaded');
 	}
 
 	async loadSettings() {
@@ -140,7 +156,7 @@ export default class VaultSitePlugin extends Plugin {
 
 			notice.hide();
 			new Notice('✓ Website initialized at /site');
-			new Notice('Run "VaultSite: Sync Notes" to add your notes');
+			new Notice('Run "Vercel Publish: Sync Notes" to add your notes');
 
 			console.log('Website initialization complete');
 		} catch (error: any) {
@@ -225,6 +241,135 @@ export default class VaultSitePlugin extends Plugin {
 			notice.hide();
 			console.error('Publish error:', error);
 			new Notice(`Publish failed: ${error.message}`);
+		}
+	}
+
+	async updateTemplate(): Promise<void> {
+		const notice = new Notice('Updating template...', 0);
+
+		try {
+			// Check if site directory exists
+			const siteExists = await this.fsUtil.fileExists('site');
+			if (!siteExists) {
+				notice.hide();
+				new Notice('Website not initialized. Run "Initialize Website" first.');
+				return;
+			}
+
+			// Get paths
+			const adapter = this.app.vault.adapter;
+			// @ts-ignore - basePath is available
+			const vaultPath = adapter.basePath;
+			// @ts-ignore - accessing manifest
+			const pluginDir = this.manifest.dir || '.';
+			const templateSourcePath = path.join(vaultPath, pluginDir, 'template-next');
+			const siteDestPath = path.join(vaultPath, 'site');
+
+			const fs = require('fs');
+			const fsp = require('fs').promises;
+
+			// Check if template exists
+			if (!fs.existsSync(templateSourcePath)) {
+				throw new Error(`Template directory not found at: ${templateSourcePath}\nPlease reinstall the plugin.`);
+			}
+
+			console.log('Updating template from:', templateSourcePath);
+			console.log('To:', siteDestPath);
+
+			// List of files/folders to update (preserving content and customizations)
+			const updatePaths = [
+				'app',
+				'components',
+				'lib',
+				'public',
+				'next.config.mjs',
+				'tsconfig.json',
+				'package.json',
+				'.eslintrc.json'
+			];
+
+			// Copy template files (excluding content directory)
+			async function copyRecursive(src: string, dest: string, skipContent = false) {
+				const stats = await fsp.stat(src);
+
+				if (stats.isDirectory()) {
+					// Skip content directory when updating
+					if (skipContent && path.basename(src) === 'content') {
+						console.log('Skipping content directory (preserving user notes)');
+						return;
+					}
+
+					// Create directory
+					await fsp.mkdir(dest, { recursive: true });
+
+					// Read directory contents
+					const entries = await fsp.readdir(src);
+
+					// Copy each entry
+					for (const entry of entries) {
+						// Skip node_modules, .next, out, and content directories
+						if (entry === 'node_modules' || entry === '.next' || entry === 'out' || entry === 'content') {
+							continue;
+						}
+
+						const srcPath = path.join(src, entry);
+						const destPath = path.join(dest, entry);
+						await copyRecursive(srcPath, destPath, skipContent);
+					}
+				} else {
+					// Copy file
+					await fsp.copyFile(src, dest);
+					console.log('Updated:', path.basename(dest));
+				}
+			}
+
+			// Update each path
+			for (const updatePath of updatePaths) {
+				const srcPath = path.join(templateSourcePath, updatePath);
+				const destPath = path.join(siteDestPath, updatePath);
+
+				if (fs.existsSync(srcPath)) {
+					await copyRecursive(srcPath, destPath, true);
+				}
+			}
+
+			notice.hide();
+			new Notice('✓ Template updated successfully!');
+			new Notice('Your content and customizations have been preserved.');
+
+			console.log('Template update complete');
+		} catch (error: any) {
+			notice.hide();
+			console.error('Update template error:', error);
+			new Notice(`Failed to update template: ${error.message}`);
+		}
+	}
+
+	async showConfig(): Promise<void> {
+		try {
+			const config = await this.configManager.loadConfig();
+
+			console.log('Current Vercel Publish Config:', config);
+
+			const configInfo = `
+**Current Config:**
+
+Include: ${config.include.length === 0 ? '(all files)' : config.include.join(', ')}
+Exclude: ${config.exclude.join(', ')}
+Content Dir: ${config.contentDir}
+
+To sync notes from anywhere in your vault:
+1. Make sure "include" is empty [] in publish.config.json
+2. Or add specific folders like ["notes", "projects"]
+3. Notes outside the site folder will be automatically synced
+
+Current config has been logged to console (Ctrl/Cmd+Shift+I)
+			`.trim();
+
+			new Notice(configInfo, 10000);
+		} catch (error: any) {
+			console.error('Show config error:', error);
+			new Notice(`Failed to show config: ${error.message}`);
 		}
 	}
 }

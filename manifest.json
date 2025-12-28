@@ -1,10 +1,10 @@
 {
-	"id": "vaultsite",
-	"name": "VaultSite",
+	"id": "vercel-publish",
+	"name": "Vercel Publish",
 	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
 	"description": "Turn your Obsidian vault into a browsable website hosted on Vercel with one-command publish.",
-	"author": "VaultSite Contributors",
-	"authorUrl": "https://github.com/vaultsite/vaultsite",
+	"author": "Vercel Publish Contributors",
+	"authorUrl": "https://github.com/vercel-publish/vercel-publish",
 	"isDesktopOnly": false
 }

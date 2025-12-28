@@ -9,7 +9,7 @@ export interface PublishConfig {
 }
 
 export const DEFAULT_PUBLISH_CONFIG: PublishConfig = {
-  include: ['notes'],
+  include: [], // Empty = include all files from vault root
   exclude: ['.obsidian', 'site', 'private', 'journal'],
   siteDir: 'site',
   contentDir: 'site/content',
