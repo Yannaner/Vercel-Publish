@@ -1,8 +1,7 @@
-import { App, TFile, Notice } from 'obsidian';
+import { App, TFile, Notice, normalizePath } from 'obsidian';
 import { PublishConfig } from './config';
 import { FileSystemUtil } from './fsUtil';
 import { LinkRewriter } from './linkRewrite';
-import * as path from 'path';
 
 export class SyncEngine {
   private fsUtil: FileSystemUtil;
@@ -14,20 +13,24 @@ export class SyncEngine {
     this.fsUtil = new FileSystemUtil(app);
   }
 
+  private join(...parts: string[]): string {
+    return normalizePath(parts.join('/'));
+  }
+
   async syncNotes(): Promise<{ synced: number; skipped: number }> {
     const notice = new Notice('Syncing notes...', 0);
 
     try {
       // Get all markdown files
       const markdownFiles = this.app.vault.getMarkdownFiles();
-      console.log('Vercel Publish: Total markdown files:', markdownFiles.length);
-      console.log('Vercel Publish: Files:', markdownFiles.map(f => f.path));
-      console.log('Vercel Publish: Config:', this.config);
+      console.debug('Vercel Publish: Total markdown files:', markdownFiles.length);
+      console.debug('Vercel Publish: Files:', markdownFiles.map(f => f.path));
+      console.debug('Vercel Publish: Config:', this.config);
 
       // Filter files based on include/exclude
       const filesToSync = markdownFiles.filter(file => {
         const shouldSync = this.shouldSyncFile(file.path);
-        console.log(`Vercel Publish: ${file.path} -> ${shouldSync ? 'SYNC' : 'SKIP'}`);
+        console.debug(`Vercel Publish: ${file.path} -> ${shouldSync ? 'SYNC' : 'SKIP'}`);
         return shouldSync;
       });
 
@@ -42,7 +45,7 @@ export class SyncEngine {
       // Show what will be synced
       const outsideSiteFiles = filesToSync.filter(f => !f.path.startsWith('site/'));
       if (outsideSiteFiles.length > 0) {
-        console.log(`Vercel Publish: Found ${outsideSiteFiles.length} notes outside site folder:`, outsideSiteFiles.map(f => f.path));
+        console.debug(`Vercel Publish: Found ${outsideSiteFiles.length} notes outside site folder:`, outsideSiteFiles.map(f => f.path));
       }
 
       // Clear content directory
@@ -63,10 +66,11 @@ export class SyncEngine {
       new Notice(`✓ Synced ${syncedCount} notes to ${this.config.contentDir}`);
 
       return { synced: syncedCount, skipped: markdownFiles.length - syncedCount };
-    } catch (error: any) {
+    } catch (error: unknown) {
       notice.hide();
       console.error('Sync error:', error);
-      new Notice(`Sync failed: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      new Notice(`Sync failed: ${message}`);
       throw error;
     }
   }
@@ -75,19 +79,19 @@ export class SyncEngine {
     // Check excludes first
     const isExcluded = this.fsUtil.isPathExcluded(filePath, this.config.exclude);
     if (isExcluded) {
-      console.log(`Vercel Publish: ${filePath} excluded`);
+      console.debug(`Vercel Publish: ${filePath} excluded`);
       return false;
     }
 
     // Check includes
     if (this.config.include.length > 0) {
       const isIncluded = this.fsUtil.isPathIncluded(filePath, this.config.include);
-      console.log(`Vercel Publish: ${filePath} include check: ${isIncluded}`);
+      console.debug(`Vercel Publish: ${filePath} include check: ${isIncluded}`);
       return isIncluded;
     }
 
     // If no includes specified, include all (that aren't excluded)
-    console.log(`Vercel Publish: ${filePath} included (no include filter)`);
+    console.debug(`Vercel Publish: ${filePath} included (no include filter)`);
     return true;
   }
 
@@ -108,7 +112,7 @@ export class SyncEngine {
     const rewrittenContent = linkRewriter.rewriteLinks(content);
 
     // Determine destination path
-    const destPath = path.join(this.config.contentDir, file.path);
+    const destPath = this.join(this.config.contentDir, file.path);
 
     // Write file
     await this.fsUtil.writeFile(destPath, rewrittenContent);

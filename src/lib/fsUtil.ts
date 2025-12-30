@@ -1,8 +1,22 @@
-import { App, TFile, TFolder, normalizePath } from 'obsidian';
-import * as path from 'path';
+import { App, normalizePath } from 'obsidian';
 
 export class FileSystemUtil {
   constructor(private app: App) {}
+
+  private basename(filePath: string): string {
+    const parts = filePath.split('/');
+    return parts[parts.length - 1] || '';
+  }
+
+  private join(...parts: string[]): string {
+    return normalizePath(parts.join('/'));
+  }
+
+  private dirname(filePath: string): string {
+    const parts = filePath.split('/');
+    parts.pop();
+    return parts.join('/') || '.';
+  }
 
   async copyDirectory(sourceDir: string, destDir: string): Promise<void> {
     const adapter = this.app.vault.adapter;
@@ -17,16 +31,16 @@ export class FileSystemUtil {
 
     // Copy files
     for (const file of entries.files) {
-      const fileName = path.basename(file);
-      const destPath = normalizePath(path.join(destDir, fileName));
+      const fileName = this.basename(file);
+      const destPath = this.join(destDir, fileName);
       const content = await adapter.read(file);
       await adapter.write(destPath, content);
     }
 
     // Copy subdirectories recursively
     for (const folder of entries.folders) {
-      const folderName = path.basename(folder);
-      const destPath = normalizePath(path.join(destDir, folderName));
+      const folderName = this.basename(folder);
+      const destPath = this.join(destDir, folderName);
       await this.copyDirectory(folder, destPath);
     }
   }
@@ -69,7 +83,7 @@ export class FileSystemUtil {
     const normalized = normalizePath(filePath);
 
     // Ensure parent directory exists
-    const parentDir = path.dirname(normalized);
+    const parentDir = this.dirname(normalized);
     await this.ensureDirectory(parentDir);
 
     await adapter.write(normalized, content);

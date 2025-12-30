@@ -1,17 +1,20 @@
-import { Notice, Plugin } from 'obsidian';
+import { Notice, Plugin, normalizePath } from 'obsidian';
 import { DEFAULT_SETTINGS, VaultSiteSettings, VaultSiteSettingTab } from "./settings";
 import { SetupWizardModal } from "./setupWizard";
 import { FileSystemUtil } from "./lib/fsUtil";
 import { GitUtil } from "./lib/gitUtil";
 import { ConfigManager } from "./lib/configManager";
 import { SyncEngine } from "./lib/sync";
-import * as path from 'path';
 
 export default class VaultSitePlugin extends Plugin {
 	settings: VaultSiteSettings;
 	private fsUtil: FileSystemUtil;
 	private gitUtil: GitUtil;
 	private configManager: ConfigManager;
+
+	private join(...parts: string[]): string {
+		return normalizePath(parts.join('/'));
+	}
 
 	async onload() {
 		await this.loadSettings();
@@ -23,48 +26,48 @@ export default class VaultSitePlugin extends Plugin {
 
 		// Add commands
 		this.addCommand({
-			id: 'vercel-publish-setup-wizard',
-			name: 'Setup Wizard',
+			id: 'setup-wizard',
+			name: 'Setup wizard',
 			callback: () => {
 				new SetupWizardModal(this.app, this).open();
 			}
 		});
 
 		this.addCommand({
-			id: 'vercel-publish-initialize-website',
-			name: 'Initialize Website',
+			id: 'initialize-website',
+			name: 'Initialize website',
 			callback: async () => {
 				await this.initializeWebsite();
 			}
 		});
 
 		this.addCommand({
-			id: 'vercel-publish-sync-notes',
-			name: 'Sync Notes',
+			id: 'sync-notes',
+			name: 'Sync notes',
 			callback: async () => {
 				await this.syncNotes();
 			}
 		});
 
 		this.addCommand({
-			id: 'vercel-publish-publish',
-			name: 'Publish (Sync + Push)',
+			id: 'publish',
+			name: 'Publish (sync + push)',
 			callback: async () => {
 				await this.publish();
 			}
 		});
 
 		this.addCommand({
-			id: 'vercel-publish-update-template',
-			name: 'Update Template',
+			id: 'update-template',
+			name: 'Update template',
 			callback: async () => {
 				await this.updateTemplate();
 			}
 		});
 
 		this.addCommand({
-			id: 'vercel-publish-show-config',
-			name: 'Show Current Config',
+			id: 'show-config',
+			name: 'Show current config',
 			callback: async () => {
 				await this.showConfig();
 			}
@@ -73,15 +76,16 @@ export default class VaultSitePlugin extends Plugin {
 		// Add settings tab
 		this.addSettingTab(new VaultSiteSettingTab(this.app, this));
 
-		console.log('Vercel Publish plugin loaded');
+		console.debug('Vercel Publish plugin loaded');
 	}
 
 	onunload() {
-		console.log('Vercel Publish plugin unloaded');
+		console.debug('Vercel Publish plugin unloaded');
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<VaultSiteSettings>);
+		const data = await this.loadData();
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, data as Partial<VaultSiteSettings>);
 	}
 
 	async saveSettings() {
@@ -100,56 +104,63 @@ export default class VaultSitePlugin extends Plugin {
 				return;
 			}
 
-			// Get paths
-			const adapter = this.app.vault.adapter;
-			// @ts-ignore - basePath is available
-			const vaultPath = adapter.basePath;
+			// Get paths - Use plugin's template directory
 			// @ts-ignore - accessing manifest
 			const pluginDir = this.manifest.dir || '.';
-			const templateSourcePath = path.join(vaultPath, pluginDir, 'template-next');
-			const siteDestPath = path.join(vaultPath, 'site');
+			const templateSourcePath = this.join(pluginDir, 'template-next');
 
-			const fs = require('fs');
-			const fsp = require('fs').promises;
+			const adapter = this.app.vault.adapter;
 
-			// Check if template exists
-			if (!fs.existsSync(templateSourcePath)) {
+			// Check if template exists in plugin directory
+			const templateExists = await adapter.exists(templateSourcePath);
+			if (!templateExists) {
 				throw new Error(`Template directory not found at: ${templateSourcePath}\nPlease reinstall the plugin.`);
 			}
 
-			console.log('Copying template from:', templateSourcePath);
-			console.log('To:', siteDestPath);
+			console.debug('Copying template from:', templateSourcePath);
+			console.debug('To: site');
 
-			// Copy template using Node.js fs (more reliable for cross-directory copy)
-			async function copyRecursive(src: string, dest: string) {
-				const stats = await fsp.stat(src);
+			// Copy template using Obsidian's adapter
+			const copyRecursive = async (src: string, dest: string): Promise<void> => {
+				const exists = await adapter.exists(src);
+				if (!exists) {
+					throw new Error(`Source path does not exist: ${src}`);
+				}
 
-				if (stats.isDirectory()) {
-					// Create directory
-					await fsp.mkdir(dest, { recursive: true });
+				// Check if it's a directory by trying to list it
+				try {
+					const entries = await adapter.list(src);
 
-					// Read directory contents
-					const entries = await fsp.readdir(src);
+					// It's a directory
+					await adapter.mkdir(dest).catch(() => {}); // Ignore if exists
 
-					// Copy each entry
-					for (const entry of entries) {
+					// Copy files
+					for (const file of entries.files) {
+						const fileName = file.split('/').pop() || '';
+						const destPath = this.join(dest, fileName);
+						const content = await adapter.readBinary(file);
+						await adapter.writeBinary(destPath, content);
+						console.debug('Copied:', fileName);
+					}
+
+					// Copy subdirectories
+					for (const folder of entries.folders) {
+						const folderName = folder.split('/').pop() || '';
 						// Skip node_modules, .next, and out directories
-						if (entry === 'node_modules' || entry === '.next' || entry === 'out') {
+						if (folderName === 'node_modules' || folderName === '.next' || folderName === 'out') {
 							continue;
 						}
-
-						const srcPath = path.join(src, entry);
-						const destPath = path.join(dest, entry);
-						await copyRecursive(srcPath, destPath);
+						const destPath = this.join(dest, folderName);
+						await copyRecursive(folder, destPath);
 					}
-				} else {
-					// Copy file
-					await fsp.copyFile(src, dest);
-					console.log('Copied:', path.basename(dest));
+				} catch (error) {
+					// It's a file
+					const content = await adapter.readBinary(src);
+					await adapter.writeBinary(dest, content);
 				}
-			}
+			};
 
-			await copyRecursive(templateSourcePath, siteDestPath);
+			await copyRecursive(templateSourcePath, 'site');
 
 			// Create default config
 			await this.configManager.ensureConfigExists();
@@ -158,11 +169,12 @@ export default class VaultSitePlugin extends Plugin {
 			new Notice('✓ Website initialized at /site');
 			new Notice('Run "Vercel Publish: Sync Notes" to add your notes');
 
-			console.log('Website initialization complete');
-		} catch (error: any) {
+			console.debug('Website initialization complete');
+		} catch (error: unknown) {
 			notice.hide();
+			const message = error instanceof Error ? error.message : String(error);
 			console.error('Initialize website error:', error);
-			new Notice(`Failed to initialize website: ${error.message}`);
+			new Notice(`Failed to initialize website: ${message}`);
 		}
 	}
 
@@ -182,9 +194,10 @@ export default class VaultSitePlugin extends Plugin {
 			const syncEngine = new SyncEngine(this.app, config);
 			await syncEngine.syncNotes();
 
-		} catch (error: any) {
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
 			console.error('Sync error:', error);
-			new Notice(`Sync failed: ${error.message}`);
+			new Notice(`Sync failed: ${message}`);
 		}
 	}
 
@@ -203,44 +216,34 @@ export default class VaultSitePlugin extends Plugin {
 			// Step 1: Sync notes
 			await this.syncNotes();
 
-			// Step 2: Git publish (if enabled)
-			if (!this.settings.enableGitPublish) {
-				notice.hide();
-				new Notice('Sync complete. Enable Git Publish in settings to push to GitHub.');
-				return;
-			}
-
-			// Check if git is initialized
-			const isRepo = await this.gitUtil.isGitRepository();
-			if (!isRepo) {
-				notice.hide();
-				new Notice('Not a git repository. Run the Setup Wizard to configure git.');
-				return;
-			}
-
-			// Check if remote is configured
-			const hasRemote = await this.gitUtil.hasRemote();
-			if (!hasRemote) {
-				notice.hide();
-				new Notice('No git remote configured. Run the Setup Wizard to add a remote.');
-				return;
-			}
-
-			// Sync and push
-			notice.setMessage('Pushing to GitHub...');
-			await this.gitUtil.syncAndPush();
-
 			notice.hide();
-			new Notice('✓ Published! Vercel will deploy automatically.');
+
+			// Step 2: Show git commands for manual execution
+			if (this.settings.enableGitPublish) {
+				const commands = this.gitUtil.getSyncAndPushInstructions();
+
+				new Notice('✓ Notes synced! Now run these git commands in your terminal:', 8000);
+
+				// Copy to clipboard automatically
+				await navigator.clipboard.writeText(commands.join('\n'));
+				new Notice('Git commands copied to clipboard', 5000);
+
+				// Log to console for reference
+				console.debug('Git publish commands:', commands.join('\n'));
+				console.debug('Vault path:', this.gitUtil.getVaultPath());
+			} else {
+				new Notice('Sync complete. Enable "Git Publish" in settings to get git commands.');
+			}
 
 			if (this.settings.deployedUrl) {
-				new Notice('Your site will be updated at: ' + this.settings.deployedUrl);
+				new Notice('After pushing to GitHub, Vercel will deploy automatically to: ' + this.settings.deployedUrl);
 			}
 
-		} catch (error: any) {
+		} catch (error: unknown) {
 			notice.hide();
+			const message = error instanceof Error ? error.message : String(error);
 			console.error('Publish error:', error);
-			new Notice(`Publish failed: ${error.message}`);
+			new Notice(`Publish failed: ${message}`);
 		}
 	}
 
@@ -257,24 +260,20 @@ export default class VaultSitePlugin extends Plugin {
 			}
 
 			// Get paths
-			const adapter = this.app.vault.adapter;
-			// @ts-ignore - basePath is available
-			const vaultPath = adapter.basePath;
 			// @ts-ignore - accessing manifest
 			const pluginDir = this.manifest.dir || '.';
-			const templateSourcePath = path.join(vaultPath, pluginDir, 'template-next');
-			const siteDestPath = path.join(vaultPath, 'site');
+			const templateSourcePath = this.join(pluginDir, 'template-next');
 
-			const fs = require('fs');
-			const fsp = require('fs').promises;
+			const adapter = this.app.vault.adapter;
 
 			// Check if template exists
-			if (!fs.existsSync(templateSourcePath)) {
+			const templateExists = await adapter.exists(templateSourcePath);
+			if (!templateExists) {
 				throw new Error(`Template directory not found at: ${templateSourcePath}\nPlease reinstall the plugin.`);
 			}
 
-			console.log('Updating template from:', templateSourcePath);
-			console.log('To:', siteDestPath);
+			console.debug('Updating template from:', templateSourcePath);
+			console.debug('To: site');
 
 			// List of files/folders to update (preserving content and customizations)
 			const updatePaths = [
@@ -289,46 +288,60 @@ export default class VaultSitePlugin extends Plugin {
 			];
 
 			// Copy template files (excluding content directory)
-			async function copyRecursive(src: string, dest: string, skipContent = false) {
-				const stats = await fsp.stat(src);
+			const copyRecursive = async (src: string, dest: string, skipContent = false): Promise<void> => {
+				const exists = await adapter.exists(src);
+				if (!exists) {
+					return;
+				}
 
-				if (stats.isDirectory()) {
+				try {
+					const entries = await adapter.list(src);
+
+					// It's a directory
+					const basename = src.split('/').pop() || '';
+
 					// Skip content directory when updating
-					if (skipContent && path.basename(src) === 'content') {
-						console.log('Skipping content directory (preserving user notes)');
+					if (skipContent && basename === 'content') {
+						console.debug('Skipping content directory (preserving user notes)');
 						return;
 					}
 
 					// Create directory
-					await fsp.mkdir(dest, { recursive: true });
+					await adapter.mkdir(dest).catch(() => {}); // Ignore if exists
 
-					// Read directory contents
-					const entries = await fsp.readdir(src);
+					// Copy files
+					for (const file of entries.files) {
+						const fileName = file.split('/').pop() || '';
+						const destPath = this.join(dest, fileName);
+						const content = await adapter.readBinary(file);
+						await adapter.writeBinary(destPath, content);
+						console.debug('Updated:', fileName);
+					}
 
-					// Copy each entry
-					for (const entry of entries) {
+					// Copy subdirectories
+					for (const folder of entries.folders) {
+						const folderName = folder.split('/').pop() || '';
 						// Skip node_modules, .next, out, and content directories
-						if (entry === 'node_modules' || entry === '.next' || entry === 'out' || entry === 'content') {
+						if (folderName === 'node_modules' || folderName === '.next' || folderName === 'out' || folderName === 'content') {
 							continue;
 						}
-
-						const srcPath = path.join(src, entry);
-						const destPath = path.join(dest, entry);
-						await copyRecursive(srcPath, destPath, skipContent);
+						const destPath = this.join(dest, folderName);
+						await copyRecursive(folder, destPath, skipContent);
 					}
-				} else {
-					// Copy file
-					await fsp.copyFile(src, dest);
-					console.log('Updated:', path.basename(dest));
+				} catch (error) {
+					// It's a file
+					const content = await adapter.readBinary(src);
+					await adapter.writeBinary(dest, content);
 				}
-			}
+			};
 
 			// Update each path
 			for (const updatePath of updatePaths) {
-				const srcPath = path.join(templateSourcePath, updatePath);
-				const destPath = path.join(siteDestPath, updatePath);
+				const srcPath = this.join(templateSourcePath, updatePath);
+				const destPath = this.join('site', updatePath);
 
-				if (fs.existsSync(srcPath)) {
+				const exists = await adapter.exists(srcPath);
+				if (exists) {
 					await copyRecursive(srcPath, destPath, true);
 				}
 			}
@@ -337,11 +350,12 @@ export default class VaultSitePlugin extends Plugin {
 			new Notice('✓ Template updated successfully!');
 			new Notice('Your content and customizations have been preserved.');
 
-			console.log('Template update complete');
-		} catch (error: any) {
+			console.debug('Template update complete');
+		} catch (error: unknown) {
 			notice.hide();
+			const message = error instanceof Error ? error.message : String(error);
 			console.error('Update template error:', error);
-			new Notice(`Failed to update template: ${error.message}`);
+			new Notice(`Failed to update template: ${message}`);
 		}
 	}
 
@@ -367,9 +381,10 @@ Current config has been logged to console (Ctrl/Cmd+Shift+I)
 			`.trim();
 
 			new Notice(configInfo, 10000);
-		} catch (error: any) {
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
 			console.error('Show config error:', error);
-			new Notice(`Failed to show config: ${error.message}`);
+			new Notice(`Failed to show config: ${message}`);
 		}
 	}
 }

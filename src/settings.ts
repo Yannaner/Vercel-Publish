@@ -29,7 +29,9 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		// Header
-		containerEl.createEl('h2', { text: 'Vercel Publish Settings' });
+		new Setting(containerEl)
+			.setName('Vercel publish settings')
+			.setHeading();
 
 		// Add intro description
 		const introEl = containerEl.createEl('div', { cls: 'setting-item-description' });
@@ -40,7 +42,7 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 
 		// GitHub Repository URL
 		new Setting(containerEl)
-			.setName('GitHub Repository URL')
+			.setName('GitHub repository URL')
 			.setDesc('Your GitHub repository URL where the site code is stored (e.g., https://github.com/username/repo)')
 			.addText(text => text
 				.setPlaceholder('https://github.com/username/repo')
@@ -52,7 +54,7 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 
 		// Deployed Website URL
 		new Setting(containerEl)
-			.setName('Deployed Website URL')
+			.setName('Deployed website URL')
 			.setDesc('Your live Vercel website URL (e.g., https://yoursite.vercel.app). This is shown after publishing.')
 			.addText(text => text
 				.setPlaceholder('https://yoursite.vercel.app')
@@ -65,10 +67,10 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		// Add button to open website if URL is set
 		if (this.plugin.settings.deployedUrl) {
 			new Setting(containerEl)
-				.setName('Open Website')
+				.setName('Open website')
 				.setDesc('View your published website in a new browser tab')
 				.addButton(button => button
-					.setButtonText('Visit Site')
+					.setButtonText('Visit site')
 					.setCta()
 					.onClick(() => {
 						window.open(this.plugin.settings.deployedUrl, '_blank');
@@ -76,12 +78,14 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		}
 
 		// Publishing Options Section
-		containerEl.createEl('h3', { text: 'Publishing Options' });
+		new Setting(containerEl)
+			.setName('Publishing options')
+			.setHeading();
 
 		// Enable Git Publish
 		new Setting(containerEl)
-			.setName('Enable Git Publish')
-			.setDesc('When enabled, the Publish command will automatically commit and push changes to GitHub')
+			.setName('Enable git publish')
+			.setDesc('When enabled, the publish command will copy git commands to your clipboard for manual execution in terminal')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.enableGitPublish)
 				.onChange(async (value) => {
@@ -89,9 +93,15 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		// Info about Obsidian Git plugin
+		const gitInfoEl = containerEl.createEl('div', { cls: 'setting-item-description' });
+		gitInfoEl.createEl('p', {
+			text: '💡 For automatic git sync without using terminal, install the "Obsidian Git" community plugin'
+		});
+
 		// Auto Sync on Save
 		new Setting(containerEl)
-			.setName('Auto Sync on Save')
+			.setName('Auto sync on save')
 			.setDesc('⚠️ Experimental: Automatically sync notes to site/content when you save a file')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.autoSyncOnSave)
@@ -101,7 +111,9 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 				}));
 
 		// Advanced Configuration Section
-		containerEl.createEl('h3', { text: 'Advanced Configuration' });
+		new Setting(containerEl)
+			.setName('Advanced configuration')
+			.setHeading();
 
 		const configDesc = containerEl.createEl('div', { cls: 'setting-item-description' });
 		configDesc.createEl('p', {
@@ -111,10 +123,11 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		const configExample = containerEl.createEl('details');
 		configExample.createEl('summary', { text: 'View example configuration' });
 		const codeBlock = configExample.createEl('pre');
+		const configDir = this.app.vault.configDir;
 		codeBlock.createEl('code', {
 			text: `{
   "include": [],  // Empty = publish all
-  "exclude": [".obsidian", "site", "private"],
+  "exclude": ["${configDir}", "site", "private"],
   "siteDir": "site",
   "contentDir": "site/content",
   "baseRoute": "/notes",
@@ -123,14 +136,15 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		});
 
 		// Quick Start Guide
-		containerEl.createEl('h3', { text: 'Quick Start' });
+		new Setting(containerEl)
+			.setName('Quick start')
+			.setHeading();
 
 		const quickStart = containerEl.createEl('div', { cls: 'setting-item-description' });
-		quickStart.createEl('ol').innerHTML = `
-			<li>Run <strong>Vercel Publish: Setup Wizard</strong> to initialize your website</li>
-			<li>Configure your GitHub repository URL above</li>
-			<li>Run <strong>Vercel Publish: Sync Notes</strong> to copy notes to /site</li>
-			<li>Run <strong>Vercel Publish: Publish</strong> to deploy to Vercel</li>
-		`;
+		const ol = quickStart.createEl('ol');
+		ol.createEl('li').createSpan().innerHTML = 'Run <strong>Vercel Publish: Setup Wizard</strong> to initialize your website';
+		ol.createEl('li').setText('Configure your GitHub repository URL above');
+		ol.createEl('li').createSpan().innerHTML = 'Run <strong>Vercel Publish: Sync Notes</strong> to copy notes to /site';
+		ol.createEl('li').createSpan().innerHTML = 'Run <strong>Vercel Publish: Publish</strong> to deploy to Vercel';
 	}
 }

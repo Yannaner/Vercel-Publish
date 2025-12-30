@@ -15,18 +15,28 @@ export class ConfigManager {
     try {
       const exists = await this.fsUtil.fileExists(CONFIG_FILE_PATH);
       if (!exists) {
-        return DEFAULT_PUBLISH_CONFIG;
+        return this.replaceObsidianPath(DEFAULT_PUBLISH_CONFIG);
       }
 
       const content = await this.fsUtil.readFile(CONFIG_FILE_PATH);
       const config = JSON.parse(content);
 
       // Merge with defaults to ensure all fields exist
-      return { ...DEFAULT_PUBLISH_CONFIG, ...config };
+      const merged = { ...DEFAULT_PUBLISH_CONFIG, ...config };
+      return this.replaceObsidianPath(merged);
     } catch (error) {
       console.error('Failed to load publish config:', error);
-      return DEFAULT_PUBLISH_CONFIG;
+      return this.replaceObsidianPath(DEFAULT_PUBLISH_CONFIG);
     }
+  }
+
+  private replaceObsidianPath(config: PublishConfig): PublishConfig {
+    // Replace .obsidian with actual configDir
+    const configDir = this.app.vault.configDir;
+    const exclude = config.exclude.map(path =>
+      path === '.obsidian' ? configDir : path
+    );
+    return { ...config, exclude };
   }
 
   async saveConfig(config: PublishConfig): Promise<void> {
