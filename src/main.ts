@@ -1,4 +1,4 @@
-import { Notice, Plugin, normalizePath } from 'obsidian';
+import { Notice, Plugin, normalizePath, DataAdapter } from 'obsidian';
 import { DEFAULT_SETTINGS, VaultSiteSettings, VaultSiteSettingTab } from "./settings";
 import { SetupWizardModal } from "./setupWizard";
 import { FileSystemUtil } from "./lib/fsUtil";
@@ -92,7 +92,7 @@ export default class VaultSitePlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	private async copyTemplateFile(adapter: any, src: string, dest: string): Promise<void> {
+	private async copyTemplateFile(adapter: DataAdapter, src: string, dest: string): Promise<void> {
 		// Check if we need to process the file content
 		const fileName = src.split('/').pop() || '';
 		const isTpl = fileName.endsWith('.tpl');
@@ -110,7 +110,7 @@ export default class VaultSitePlugin extends Plugin {
 		console.debug('Copied:', originalName);
 	}
 
-	private async copyTemplateRecursive(adapter: any, src: string, dest: string, skipContent = false): Promise<void> {
+	private async copyTemplateRecursive(adapter: DataAdapter, src: string, dest: string, skipContent = false): Promise<void> {
 		const exists = await adapter.exists(src);
 		if (!exists) {
 			return;
