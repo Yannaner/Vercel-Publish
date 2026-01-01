@@ -2,7 +2,7 @@
 node_modules
 .next
 .git
-.obsidian
+__OBSIDIAN_CONFIG_DIR__
 *.log
 .env*.local
 .cache

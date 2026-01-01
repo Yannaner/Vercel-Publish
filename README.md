@@ -48,7 +48,7 @@ Vercel Publish is an Obsidian plugin that seamlessly transforms your personal kn
 ### Privacy & Control
 
 - **Selective Publishing** - Choose which folders to include/exclude
-- **Default Exclusions** - `.obsidian`, `private`, `journal` folders excluded by default
+- **Default Exclusions** - Configuration folder (e.g. `.obsidian`), `private`, `journal` folders excluded by default
 - **Custom Configuration** - Fine-grained control via `publish.config.json`
 
 ### Modern Tech Stack
@@ -72,7 +72,7 @@ Vercel Publish is an Obsidian plugin that seamlessly transforms your personal kn
 ### Manual Installation
 
 1. Download the latest release from [GitHub Releases](https://github.com/Yannaner/Vercel-Publish/releases)
-2. Extract the files to your vault's plugins folder: `<vault>/.obsidian/plugins/vercel-publish/`
+2. Extract the files to your vault's plugins folder: `<vault>/.obsidian/plugins/vercel-publish/` (or your custom configuration folder)
 3. Reload Obsidian
 4. Enable the plugin in Settings → Community Plugins
 
@@ -156,7 +156,7 @@ Your site will be live in minutes!
 ```typescript
 {
   include: string[];    // Folders to include (empty = all)
-  exclude: string[];    // Folders to exclude (default: .obsidian, site, private)
+  exclude: string[];    // Folders to exclude (default: config folder, site, private)
   siteDir: string;      // Site directory (default: "site")
   contentDir: string;   // Content directory (default: "site/content")
   assetsDir: string;    // Assets directory (default: "site/public/assets")

@@ -24,7 +24,7 @@ const CONTENT_DIR = path.join(process.cwd(), 'content');
 const MAX_FILES = 10000;
 const IGNORED_FOLDERS = new Set([
   '.git',
-  '.obsidian',
+  '__OBSIDIAN_CONFIG_DIR__',
   'node_modules',
   '.next',
   '.vercel',

@@ -92,6 +92,75 @@ export default class VaultSitePlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
+	private async copyTemplateFile(adapter: any, src: string, dest: string): Promise<void> {
+		// Check if we need to process the file content
+		const fileName = src.split('/').pop() || '';
+		const isTpl = fileName.endsWith('.tpl');
+		const originalName = isTpl ? fileName.substring(0, fileName.length - 4) : fileName;
+		
+		if (originalName === '.vercelignore' || originalName === 'contentIndex.ts') {
+			let content = await adapter.read(src);
+			// Replace __OBSIDIAN_CONFIG_DIR__ with actual config dir
+			content = content.replace(/__OBSIDIAN_CONFIG_DIR__/g, this.app.vault.configDir);
+			await adapter.write(dest, content);
+		} else {
+			const content = await adapter.readBinary(src);
+			await adapter.writeBinary(dest, content);
+		}
+		console.debug('Copied:', originalName);
+	}
+
+	private async copyTemplateRecursive(adapter: any, src: string, dest: string, skipContent = false): Promise<void> {
+		const exists = await adapter.exists(src);
+		if (!exists) {
+			return;
+		}
+
+		try {
+			const entries = await adapter.list(src);
+
+			// It's a directory
+			const basename = src.split('/').pop() || '';
+
+			// Skip content directory when updating (if requested)
+			if (skipContent && basename === 'content') {
+				console.debug('Skipping content directory (preserving user notes)');
+				return;
+			}
+
+			// Create directory
+			await adapter.mkdir(dest).catch(() => {}); // Ignore if exists
+
+			// Copy files
+			for (const file of entries.files) {
+				const fileName = file.split('/').pop() || '';
+				let destFileName = fileName;
+				
+				// Handle .tpl files
+				if (fileName.endsWith('.tpl')) {
+					destFileName = fileName.substring(0, fileName.length - 4);
+				}
+				
+				const destPath = this.join(dest, destFileName);
+				await this.copyTemplateFile(adapter, file, destPath);
+			}
+
+			// Copy subdirectories
+			for (const folder of entries.folders) {
+				const folderName = folder.split('/').pop() || '';
+				// Skip node_modules, .next, out
+				if (folderName === 'node_modules' || folderName === '.next' || folderName === 'out') {
+					continue;
+				}
+				const destPath = this.join(dest, folderName);
+				await this.copyTemplateRecursive(adapter, folder, destPath, skipContent);
+			}
+		} catch {
+			// It's a file
+			await this.copyTemplateFile(adapter, src, dest);
+		}
+	}
+
 	async initializeWebsite(): Promise<void> {
 		const notice = new Notice('Initializing website...', 0);
 
@@ -120,47 +189,7 @@ export default class VaultSitePlugin extends Plugin {
 			console.debug('Copying template from:', templateSourcePath);
 			console.debug('To: site');
 
-			// Copy template using Obsidian's adapter
-			const copyRecursive = async (src: string, dest: string): Promise<void> => {
-				const exists = await adapter.exists(src);
-				if (!exists) {
-					throw new Error(`Source path does not exist: ${src}`);
-				}
-
-				// Check if it's a directory by trying to list it
-				try {
-					const entries = await adapter.list(src);
-
-					// It's a directory
-					await adapter.mkdir(dest).catch(() => {}); // Ignore if exists
-
-					// Copy files
-					for (const file of entries.files) {
-						const fileName = file.split('/').pop() || '';
-						const destPath = this.join(dest, fileName);
-						const content = await adapter.readBinary(file);
-						await adapter.writeBinary(destPath, content);
-						console.debug('Copied:', fileName);
-					}
-
-					// Copy subdirectories
-					for (const folder of entries.folders) {
-						const folderName = folder.split('/').pop() || '';
-						// Skip node_modules, .next, and out directories
-						if (folderName === 'node_modules' || folderName === '.next' || folderName === 'out') {
-							continue;
-						}
-						const destPath = this.join(dest, folderName);
-						await copyRecursive(folder, destPath);
-					}
-				} catch {
-					// It's a file
-					const content = await adapter.readBinary(src);
-					await adapter.writeBinary(dest, content);
-				}
-			};
-
-			await copyRecursive(templateSourcePath, 'site');
+			await this.copyTemplateRecursive(adapter, templateSourcePath, 'site');
 
 			// Create default config
 			await this.configManager.ensureConfigExists();
@@ -287,54 +316,6 @@ export default class VaultSitePlugin extends Plugin {
 				'.eslintrc.json'
 			];
 
-			// Copy template files (excluding content directory)
-			const copyRecursive = async (src: string, dest: string, skipContent = false): Promise<void> => {
-				const exists = await adapter.exists(src);
-				if (!exists) {
-					return;
-				}
-
-				try {
-					const entries = await adapter.list(src);
-
-					// It's a directory
-					const basename = src.split('/').pop() || '';
-
-					// Skip content directory when updating
-					if (skipContent && basename === 'content') {
-						console.debug('Skipping content directory (preserving user notes)');
-						return;
-					}
-
-					// Create directory
-					await adapter.mkdir(dest).catch(() => {}); // Ignore if exists
-
-					// Copy files
-					for (const file of entries.files) {
-						const fileName = file.split('/').pop() || '';
-						const destPath = this.join(dest, fileName);
-						const content = await adapter.readBinary(file);
-						await adapter.writeBinary(destPath, content);
-						console.debug('Updated:', fileName);
-					}
-
-					// Copy subdirectories
-					for (const folder of entries.folders) {
-						const folderName = folder.split('/').pop() || '';
-						// Skip node_modules, .next, out, and content directories
-						if (folderName === 'node_modules' || folderName === '.next' || folderName === 'out' || folderName === 'content') {
-							continue;
-						}
-						const destPath = this.join(dest, folderName);
-						await copyRecursive(folder, destPath, skipContent);
-					}
-				} catch {
-					// It's a file
-					const content = await adapter.readBinary(src);
-					await adapter.writeBinary(dest, content);
-				}
-			};
-
 			// Update each path
 			for (const updatePath of updatePaths) {
 				const srcPath = this.join(templateSourcePath, updatePath);
@@ -342,7 +323,7 @@ export default class VaultSitePlugin extends Plugin {
 
 				const exists = await adapter.exists(srcPath);
 				if (exists) {
-					await copyRecursive(srcPath, destPath, true);
+					await this.copyTemplateRecursive(adapter, srcPath, destPath, true);
 				}
 			}
 
