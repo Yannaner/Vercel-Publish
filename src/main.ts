@@ -153,7 +153,7 @@ export default class VaultSitePlugin extends Plugin {
 						const destPath = this.join(dest, folderName);
 						await copyRecursive(folder, destPath);
 					}
-				} catch (error) {
+				} catch {
 					// It's a file
 					const content = await adapter.readBinary(src);
 					await adapter.writeBinary(dest, content);
@@ -166,8 +166,8 @@ export default class VaultSitePlugin extends Plugin {
 			await this.configManager.ensureConfigExists();
 
 			notice.hide();
-			new Notice('✓ Website initialized at /site');
-			new Notice('Run "Vercel Publish: Sync Notes" to add your notes');
+			new Notice('Website initialized at /site');
+			new Notice('Run "Vercel publish: Sync notes" to add your notes');
 
 			console.debug('Website initialization complete');
 		} catch (error: unknown) {
@@ -183,7 +183,7 @@ export default class VaultSitePlugin extends Plugin {
 			// Check if site exists
 			const siteExists = await this.fsUtil.fileExists('site');
 			if (!siteExists) {
-				new Notice('Website not initialized. Run "Initialize Website" first.');
+				new Notice('Website not initialized. Run "initialize website" first.');
 				return;
 			}
 
@@ -209,7 +209,7 @@ export default class VaultSitePlugin extends Plugin {
 			const siteExists = await this.fsUtil.fileExists('site');
 			if (!siteExists) {
 				notice.hide();
-				new Notice('Website not initialized. Run "Initialize Website" first.');
+				new Notice('Website not initialized. Run "initialize website" first.');
 				return;
 			}
 
@@ -222,7 +222,7 @@ export default class VaultSitePlugin extends Plugin {
 			if (this.settings.enableGitPublish) {
 				const commands = this.gitUtil.getSyncAndPushInstructions();
 
-				new Notice('✓ Notes synced! Now run these git commands in your terminal:', 8000);
+				new Notice('Notes synced! Run these git commands in your terminal:', 8000);
 
 				// Copy to clipboard automatically
 				await navigator.clipboard.writeText(commands.join('\n'));
@@ -232,7 +232,7 @@ export default class VaultSitePlugin extends Plugin {
 				console.debug('Git publish commands:', commands.join('\n'));
 				console.debug('Vault path:', this.gitUtil.getVaultPath());
 			} else {
-				new Notice('Sync complete. Enable "Git Publish" in settings to get git commands.');
+				new Notice('Sync complete. Enable Git publish in settings to get git commands.');
 			}
 
 			if (this.settings.deployedUrl) {
@@ -255,7 +255,7 @@ export default class VaultSitePlugin extends Plugin {
 			const siteExists = await this.fsUtil.fileExists('site');
 			if (!siteExists) {
 				notice.hide();
-				new Notice('Website not initialized. Run "Initialize Website" first.');
+				new Notice('Website not initialized. Run "initialize website" first.');
 				return;
 			}
 
@@ -328,7 +328,7 @@ export default class VaultSitePlugin extends Plugin {
 						const destPath = this.join(dest, folderName);
 						await copyRecursive(folder, destPath, skipContent);
 					}
-				} catch (error) {
+				} catch {
 					// It's a file
 					const content = await adapter.readBinary(src);
 					await adapter.writeBinary(dest, content);
@@ -347,7 +347,7 @@ export default class VaultSitePlugin extends Plugin {
 			}
 
 			notice.hide();
-			new Notice('✓ Template updated successfully!');
+			new Notice('Template updated successfully!');
 			new Notice('Your content and customizations have been preserved.');
 
 			console.debug('Template update complete');
@@ -363,7 +363,7 @@ export default class VaultSitePlugin extends Plugin {
 		try {
 			const config = await this.configManager.loadConfig();
 
-			console.log('Current Vercel Publish Config:', config);
+			console.debug('Current Vercel Publish Config:', config);
 
 			const configInfo = `
 **Current Config:**

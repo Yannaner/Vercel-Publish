@@ -20,9 +20,9 @@ export class SetupWizardModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
 
-    contentEl.createEl('h2', { text: 'VaultSite setup wizard' });
+    contentEl.createEl('h2', { text: 'Vault site setup wizard' });
     contentEl.createEl('p', {
-      text: 'Follow these steps to set up your VaultSite website.',
+      text: 'Follow these steps to set up your vault site website.',
       cls: 'setting-item-description'
     });
 
@@ -30,13 +30,13 @@ export class SetupWizardModal extends Modal {
     await this.renderStep1(contentEl);
 
     // Step 2: Git Status
-    await this.renderStep2(contentEl);
+    this.renderStep2(contentEl);
 
     // Step 3: GitHub Repo
-    await this.renderStep3(contentEl);
+    this.renderStep3(contentEl);
 
     // Step 4: Push to GitHub
-    await this.renderStep4(contentEl);
+    this.renderStep4(contentEl);
 
     // Step 5: Connect Vercel
     await this.renderStep5(contentEl);
@@ -53,7 +53,7 @@ export class SetupWizardModal extends Modal {
 
     if (siteExists) {
       section.createEl('p', {
-        text: '✓ Website directory already exists at /site',
+        text: 'Website directory already exists at /site',
         cls: 'vaultsite-success'
       });
     } else {
@@ -67,7 +67,7 @@ export class SetupWizardModal extends Modal {
             button.setDisabled(true);
             try {
               await this.plugin.initializeWebsite();
-              this.onOpen(); // Refresh wizard
+              void this.onOpen(); // Refresh wizard
             } catch (error: unknown) {
               const message = error instanceof Error ? error.message : String(error);
               new Notice(`Failed to initialize website: ${message}`);
@@ -77,11 +77,11 @@ export class SetupWizardModal extends Modal {
     }
   }
 
-  private async renderStep2(container: HTMLElement) {
+  private renderStep2(container: HTMLElement) {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
-    section.createEl('h3', { text: '2. Git repository' });
+    section.createEl('h3', { text: '2. Initialize Git repository' });
     section.createEl('p', {
-      text: 'Initialize git to track your vault changes. Run these commands in your terminal:',
+      text: 'Initialize Git to track your vault changes. Run these commands in your terminal:',
     });
 
     section.createEl('p', {
@@ -95,21 +95,21 @@ export class SetupWizardModal extends Modal {
 
     new Setting(section)
       .setName('Copy commands')
-      .setDesc('Copy git initialization commands to clipboard')
+      .setDesc('Copy Git initialization commands to clipboard')
       .addButton(button => button
         .setButtonText('Copy to clipboard')
         .onClick(() => {
-          navigator.clipboard.writeText(this.gitUtil.getGitInstructions().join('\n'));
+          void navigator.clipboard.writeText(this.gitUtil.getGitInstructions().join('\n'));
           new Notice('Commands copied to clipboard');
         }));
 
     section.createEl('p', {
-      text: '💡 Tip: For automatic git sync, install the "Obsidian Git" community plugin',
+      text: 'Tip: for automatic Git sync, install the "Obsidian Git" community plugin',
       cls: 'setting-item-description'
     });
   }
 
-  private async renderStep3(container: HTMLElement) {
+  private renderStep3(container: HTMLElement) {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
     section.createEl('h3', { text: '3. Create GitHub repository' });
     section.createEl('p', {
@@ -117,7 +117,7 @@ export class SetupWizardModal extends Modal {
     });
 
     new Setting(section)
-      .setName('Open GitHub')
+      .setName('Create GitHub repository')
       .setDesc('Create a new repository on GitHub')
       .addButton(button => button
         .setButtonText('Open GitHub: new repo')
@@ -140,7 +140,7 @@ export class SetupWizardModal extends Modal {
           this.plugin.settings.githubRepoUrl = value;
           await this.plugin.saveSettings();
           // Refresh wizard to update Step 4
-          this.onOpen();
+          void this.onOpen();
         }));
 
     if (this.plugin.settings.githubRepoUrl) {
@@ -151,7 +151,7 @@ export class SetupWizardModal extends Modal {
     }
   }
 
-  private async renderStep4(container: HTMLElement) {
+  private renderStep4(container: HTMLElement) {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
     section.createEl('h3', { text: '4. Push to GitHub' });
     section.createEl('p', {
@@ -170,24 +170,24 @@ export class SetupWizardModal extends Modal {
 
       new Setting(section)
         .setName('Copy commands')
-        .setDesc('Copy git remote and push commands to clipboard')
+        .setDesc('Copy Git remote and push commands to clipboard')
         .addButton(button => button
           .setButtonText('Copy to clipboard')
           .onClick(() => {
-            navigator.clipboard.writeText(
+            void navigator.clipboard.writeText(
               this.gitUtil.getRemoteInstructions(this.plugin.settings.githubRepoUrl).join('\n')
             );
             new Notice('Commands copied to clipboard');
           }));
     } else {
       section.createEl('p', {
-        text: '⚠ Enter GitHub repo URL in Step 3 first',
+        text: 'Enter GitHub repo URL in step 3 first',
         cls: 'vaultsite-warning'
       });
     }
 
     section.createEl('p', {
-      text: '💡 Tip: For automatic git sync, install the "Obsidian Git" community plugin',
+      text: 'Tip: for automatic Git sync, install the "Obsidian Git" community plugin',
       cls: 'setting-item-description'
     });
   }
@@ -200,7 +200,7 @@ export class SetupWizardModal extends Modal {
     });
 
     new Setting(section)
-      .setName('Open Vercel')
+      .setName('Deploy to Vercel')
       .setDesc('Import your GitHub repository to Vercel')
       .addButton(button => button
         .setButtonText('Open Vercel: new project')
@@ -211,10 +211,10 @@ export class SetupWizardModal extends Modal {
     const instructionsList = section.createEl('div', { cls: 'setup-instructions' });
     instructionsList.createEl('p', { text: 'In Vercel:' });
     const ol = instructionsList.createEl('ol');
-    ol.createEl('li', { text: 'Select "Import Git Repository"' });
+    ol.createEl('li', { text: 'Select "Import Git repository"' });
     ol.createEl('li', { text: 'Choose your GitHub repository' });
-    ol.createEl('li', { text: 'Set Root Directory to: site' });
-    ol.createEl('li', { text: 'Click Deploy' });
+    ol.createEl('li', { text: 'Set root directory to: site' });
+    ol.createEl('li', { text: 'Click deploy' });
 
     section.createEl('p', {
       text: 'After deployment, paste your website URL here:',
@@ -252,9 +252,9 @@ export class SetupWizardModal extends Modal {
 
     if (siteExists && this.plugin.settings.githubRepoUrl && this.plugin.settings.deployedUrl) {
       const completionSection = container.createDiv({ cls: 'setup-wizard-complete' });
-      completionSection.createEl('h3', { text: '🎉 Setup complete!' });
+      completionSection.createEl('h3', { text: 'Setup complete!' });
       completionSection.createEl('p', {
-        text: 'You can now use the "VaultSite: Sync notes" command to copy notes to /site, then use git to commit and push your changes.',
+        text: 'You can now use the "Vault site: Sync notes" command to copy notes to /site, then use Git to commit and push your changes.',
       });
     }
   }

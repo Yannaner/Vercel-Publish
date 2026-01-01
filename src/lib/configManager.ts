@@ -34,6 +34,7 @@ export class ConfigManager {
     // Replace .obsidian with actual configDir
     const configDir = this.app.vault.configDir;
     const exclude = config.exclude.map(path =>
+      // eslint-disable-next-line obsidianmd/hardcoded-config-path
       path === '.obsidian' ? configDir : path
     );
     return { ...config, exclude };

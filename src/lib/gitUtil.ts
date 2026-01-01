@@ -1,5 +1,3 @@
-import { Notice } from 'obsidian';
-
 /**
  * GitUtil - Provides git command instructions for manual execution
  *
@@ -14,19 +12,19 @@ export class GitUtil {
    * Checks if the vault directory appears to be a git repository
    * This is a best-effort check based on file system only
    */
-  async isGitRepository(): Promise<boolean> {
+  isGitRepository(): boolean {
     // We can't execute git commands, so we check for .git directory
     // This requires access to the file system through the app
     // For now, we'll return false and rely on manual setup
     return false;
   }
 
-  async hasRemote(): Promise<boolean> {
+  hasRemote(): boolean {
     // Cannot be determined without executing git commands
     return false;
   }
 
-  async getRemoteUrl(): Promise<string | null> {
+  getRemoteUrl(): string | null {
     // Cannot be determined without executing git commands
     return null;
   }

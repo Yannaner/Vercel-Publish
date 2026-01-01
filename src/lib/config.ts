@@ -11,6 +11,7 @@ export interface PublishConfig {
 // Note: The .obsidian exclusion will be replaced with vault.configDir at runtime
 export const DEFAULT_PUBLISH_CONFIG: PublishConfig = {
   include: [], // Empty = include all files from vault root
+  // eslint-disable-next-line obsidianmd/hardcoded-config-path
   exclude: ['.obsidian', 'site', 'private', 'journal'], // .obsidian is replaced at runtime
   siteDir: 'site',
   contentDir: 'site/content',
