@@ -36,7 +36,7 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		// Add intro description
 		const introEl = containerEl.createEl('div', { cls: 'setting-item-description' });
 		introEl.createEl('p', {
-			text: 'Configure your settings - these urls help the plugin notify you when publishing is complete.'
+			text: 'Configure your settings - these urls help the plugin notify you when publishing is complete'
 		});
 		introEl.createEl('br');
 
@@ -117,7 +117,7 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 
 		const configDesc = containerEl.createEl('div', { cls: 'setting-item-description' });
 		configDesc.createEl('p', {
-			text: 'Edit publish.config.json in your vault root to customize which folders to publish, exclude private notes, and configure other advanced settings.'
+			text: 'Edit publish.config.json in your vault root to customize which folders to publish, exclude private notes, and configure other advanced settings'
 		});
 
 		const configExample = containerEl.createEl('details');

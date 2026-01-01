@@ -1,7 +1,7 @@
 // This is Next.js build-time code that runs on Vercel/Node.js, not in Obsidian
-// eslint-disable-next-line no-restricted-imports
+// eslint-disable-next-line no-restricted-imports -- fs is required for reading markdown files during Next.js build
 import fs from 'fs';
-// eslint-disable-next-line no-restricted-imports
+// eslint-disable-next-line no-restricted-imports -- path is required for file path operations during Next.js build
 import path from 'path';
 
 export interface NoteMetadata {

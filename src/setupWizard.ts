@@ -46,7 +46,7 @@ export class SetupWizardModal extends Modal {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
     section.createEl('h3', { text: '1. Initialize website' });
     section.createEl('p', {
-      text: 'Create the /site directory with the Next.js website template.',
+      text: 'Create the /site directory with the Next.js website template',
     });
 
     const siteExists = await this.fsUtil.fileExists('site');
@@ -81,7 +81,7 @@ export class SetupWizardModal extends Modal {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
     section.createEl('h3', { text: '2. Initialize Git repository' });
     section.createEl('p', {
-      text: 'Initialize Git to track your vault changes. Run these commands in your terminal:',
+      text: 'Initialize Git to track your vault changes. Run these commands in your terminal',
     });
 
     section.createEl('p', {
@@ -113,7 +113,7 @@ export class SetupWizardModal extends Modal {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
     section.createEl('h3', { text: '3. Create GitHub repository' });
     section.createEl('p', {
-      text: 'Create a new GitHub repository for your vault.',
+      text: 'Create a new GitHub repository for your vault',
     });
 
     new Setting(section)
@@ -126,7 +126,7 @@ export class SetupWizardModal extends Modal {
         }));
 
     section.createEl('p', {
-      text: 'After creating the repository, paste the URL here:',
+      text: 'After creating the repository, paste the URL here',
     });
 
     new Setting(section)
@@ -155,7 +155,7 @@ export class SetupWizardModal extends Modal {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
     section.createEl('h3', { text: '4. Push to GitHub' });
     section.createEl('p', {
-      text: 'Push your vault to the GitHub repository. Run these commands in your terminal:',
+      text: 'Push your vault to the GitHub repository. Run these commands in your terminal',
     });
 
     if (this.plugin.settings.githubRepoUrl) {
@@ -194,22 +194,22 @@ export class SetupWizardModal extends Modal {
 
   private async renderStep5(container: HTMLElement) {
     const section = container.createDiv({ cls: 'setup-wizard-step' });
-    section.createEl('h3', { text: '5. Deploy to Vercel' });
+    section.createEl('h3', { text: '5. Vercel deployment' });
     section.createEl('p', {
-      text: 'Connect your GitHub repository to Vercel for hosting.',
+      text: 'Configure hosting for your published website',
     });
 
     new Setting(section)
-      .setName('Deploy to Vercel')
-      .setDesc('Import your GitHub repository to Vercel')
+      .setName('Vercel deployment')
+      .setDesc('Configure website hosting')
       .addButton(button => button
-        .setButtonText('Open Vercel')
+        .setButtonText('Open deployment site')
         .onClick(() => {
           window.open('https://vercel.com/new', '_blank');
         }));
 
     const instructionsList = section.createEl('div', { cls: 'setup-instructions' });
-    instructionsList.createEl('p', { text: 'In Vercel:' });
+    instructionsList.createEl('p', { text: 'Vercel setup steps' });
     const ol = instructionsList.createEl('ol');
     ol.createEl('li', { text: 'Select "import Git repository"' });
     ol.createEl('li', { text: 'Choose your GitHub repository' });
@@ -217,7 +217,7 @@ export class SetupWizardModal extends Modal {
     ol.createEl('li', { text: 'Click deploy' });
 
     section.createEl('p', {
-      text: 'After deployment, paste your website URL here:',
+      text: 'After deployment, paste your website URL here',
     });
 
     new Setting(section)
@@ -238,9 +238,9 @@ export class SetupWizardModal extends Modal {
       });
 
       new Setting(section)
-        .setName('Open website')
+        .setName('View website')
         .addButton(button => button
-          .setButtonText('Open website')
+          .setButtonText('View website')
           .setCta()
           .onClick(() => {
             window.open(this.plugin.settings.deployedUrl, '_blank');
@@ -254,7 +254,7 @@ export class SetupWizardModal extends Modal {
       const completionSection = container.createDiv({ cls: 'setup-wizard-complete' });
       completionSection.createEl('h3', { text: 'Setup complete!' });
       completionSection.createEl('p', {
-        text: 'You can now use the "Vault site: sync notes" command to copy notes to /site, then use Git to commit and push your changes.',
+        text: 'You can now sync notes to your site and publish changes',
       });
     }
   }
