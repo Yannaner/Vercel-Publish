@@ -1,4 +1,7 @@
+// This is Next.js build-time code that runs on Vercel/Node.js, not in Obsidian
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
+// eslint-disable-next-line no-restricted-imports
 import path from 'path';
 
 export interface NoteMetadata {
@@ -59,7 +62,7 @@ function buildFolderTree(dir: string, relativePath: string = ''): FolderNode {
 
   // Safety: check if we've scanned too many files
   if (fileCount > MAX_FILES) {
-    console.warn(`[contentIndex] Safety limit reached: ${MAX_FILES} files scanned. Stopping.`);
+    console.error(`[contentIndex] Safety limit reached: ${MAX_FILES} files scanned. Stopping.`);
     return node;
   }
 
@@ -129,7 +132,7 @@ export function getContentTree(): FolderNode {
   const tree = buildFolderTree(CONTENT_DIR);
   const duration = Date.now() - startTime;
 
-  console.log(`[contentIndex] Scanned ${fileCount} files in ${duration}ms from ${CONTENT_DIR}`);
+  console.debug(`[contentIndex] Scanned ${fileCount} files in ${duration}ms from ${CONTENT_DIR}`);
 
   return tree;
 }

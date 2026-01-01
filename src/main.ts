@@ -167,7 +167,7 @@ export default class VaultSitePlugin extends Plugin {
 
 			notice.hide();
 			new Notice('Website initialized at /site');
-			new Notice('Run "Vercel publish: Sync notes" to add your notes');
+			new Notice('Run "vercel publish: sync notes" to add your notes');
 
 			console.debug('Website initialization complete');
 		} catch (error: unknown) {
@@ -222,7 +222,7 @@ export default class VaultSitePlugin extends Plugin {
 			if (this.settings.enableGitPublish) {
 				const commands = this.gitUtil.getSyncAndPushInstructions();
 
-				new Notice('Notes synced! Run these git commands in your terminal:', 8000);
+				new Notice('Notes synced! Run these Git commands in your terminal:', 8000);
 
 				// Copy to clipboard automatically
 				await navigator.clipboard.writeText(commands.join('\n'));
@@ -232,7 +232,7 @@ export default class VaultSitePlugin extends Plugin {
 				console.debug('Git publish commands:', commands.join('\n'));
 				console.debug('Vault path:', this.gitUtil.getVaultPath());
 			} else {
-				new Notice('Sync complete. Enable Git publish in settings to get git commands.');
+				new Notice('Sync complete. Enable Git publish in settings to get Git commands.');
 			}
 
 			if (this.settings.deployedUrl) {

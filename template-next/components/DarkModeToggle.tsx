@@ -8,7 +8,8 @@ export function DarkModeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    // Check localStorage and system preference
+    // This is Next.js client code that runs in the browser, not in Obsidian
+    // eslint-disable-next-line no-restricted-globals
     const stored = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const shouldBeDark = stored === 'dark' || (!stored && prefersDark);
@@ -23,11 +24,14 @@ export function DarkModeToggle() {
     const newIsDark = !isDark;
     setIsDark(newIsDark);
 
+    // This is Next.js client code that runs in the browser, not in Obsidian
     if (newIsDark) {
       document.documentElement.classList.add('dark');
+      // eslint-disable-next-line no-restricted-globals
       localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      // eslint-disable-next-line no-restricted-globals
       localStorage.setItem('theme', 'light');
     }
   };

@@ -36,7 +36,7 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		// Add intro description
 		const introEl = containerEl.createEl('div', { cls: 'setting-item-description' });
 		introEl.createEl('p', {
-			text: 'Configure your settings. These URLs help the plugin notify you when publishing is complete.'
+			text: 'Configure your settings - these urls help the plugin notify you when publishing is complete.'
 		});
 		introEl.createEl('br');
 
@@ -143,16 +143,16 @@ export class VaultSiteSettingTab extends PluginSettingTab {
 		const ol = quickStart.createEl('ol');
 		const li1 = ol.createEl('li');
 		li1.appendText('Run ');
-		li1.createEl('strong', { text: 'Vercel publish: Setup wizard' });
+		li1.createEl('strong', { text: 'Vercel publish: setup wizard' });
 		li1.appendText(' to initialize your website');
 		ol.createEl('li', { text: 'Configure your GitHub repository URL above' });
 		const li3 = ol.createEl('li');
 		li3.appendText('Run ');
-		li3.createEl('strong', { text: 'Vercel publish: Sync notes' });
+		li3.createEl('strong', { text: 'Vercel publish: sync notes' });
 		li3.appendText(' to copy notes to /site');
 		const li4 = ol.createEl('li');
 		li4.appendText('Run ');
-		li4.createEl('strong', { text: 'Vercel publish: Publish' });
+		li4.createEl('strong', { text: 'Vercel publish: publish' });
 		li4.appendText(' to deploy to Vercel');
 	}
 }

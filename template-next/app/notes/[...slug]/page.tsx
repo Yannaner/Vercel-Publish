@@ -12,11 +12,8 @@ interface NotePageProps {
 // Force static generation - no dynamic routes allowed with output: 'export'
 export const dynamicParams = false;
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   const allNotes = getAllNotes();
-
-  // Safety: Log how many pages we're generating
-  console.log(`[generateStaticParams] Generating ${allNotes.length} note pages`);
 
   if (allNotes.length > 5000) {
     console.warn(`[generateStaticParams] WARNING: Attempting to generate ${allNotes.length} pages. This may timeout on Vercel.`);

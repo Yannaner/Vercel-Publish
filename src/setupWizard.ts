@@ -61,7 +61,7 @@ export class SetupWizardModal extends Modal {
         .setName('Create website')
         .setDesc('Initialize the /site directory')
         .addButton(button => button
-          .setButtonText('Create /site website')
+          .setButtonText('Create /site')
           .setCta()
           .onClick(async () => {
             button.setDisabled(true);
@@ -97,7 +97,7 @@ export class SetupWizardModal extends Modal {
       .setName('Copy commands')
       .setDesc('Copy Git initialization commands to clipboard')
       .addButton(button => button
-        .setButtonText('Copy to clipboard')
+        .setButtonText('Copy')
         .onClick(() => {
           void navigator.clipboard.writeText(this.gitUtil.getGitInstructions().join('\n'));
           new Notice('Commands copied to clipboard');
@@ -120,7 +120,7 @@ export class SetupWizardModal extends Modal {
       .setName('Create GitHub repository')
       .setDesc('Create a new repository on GitHub')
       .addButton(button => button
-        .setButtonText('Open GitHub: new repo')
+        .setButtonText('Open GitHub')
         .onClick(() => {
           window.open('https://github.com/new', '_blank');
         }));
@@ -172,7 +172,7 @@ export class SetupWizardModal extends Modal {
         .setName('Copy commands')
         .setDesc('Copy Git remote and push commands to clipboard')
         .addButton(button => button
-          .setButtonText('Copy to clipboard')
+          .setButtonText('Copy')
           .onClick(() => {
             void navigator.clipboard.writeText(
               this.gitUtil.getRemoteInstructions(this.plugin.settings.githubRepoUrl).join('\n')
@@ -203,7 +203,7 @@ export class SetupWizardModal extends Modal {
       .setName('Deploy to Vercel')
       .setDesc('Import your GitHub repository to Vercel')
       .addButton(button => button
-        .setButtonText('Open Vercel: new project')
+        .setButtonText('Open Vercel')
         .onClick(() => {
           window.open('https://vercel.com/new', '_blank');
         }));
@@ -211,7 +211,7 @@ export class SetupWizardModal extends Modal {
     const instructionsList = section.createEl('div', { cls: 'setup-instructions' });
     instructionsList.createEl('p', { text: 'In Vercel:' });
     const ol = instructionsList.createEl('ol');
-    ol.createEl('li', { text: 'Select "Import Git repository"' });
+    ol.createEl('li', { text: 'Select "import Git repository"' });
     ol.createEl('li', { text: 'Choose your GitHub repository' });
     ol.createEl('li', { text: 'Set root directory to: site' });
     ol.createEl('li', { text: 'Click deploy' });
@@ -254,7 +254,7 @@ export class SetupWizardModal extends Modal {
       const completionSection = container.createDiv({ cls: 'setup-wizard-complete' });
       completionSection.createEl('h3', { text: 'Setup complete!' });
       completionSection.createEl('p', {
-        text: 'You can now use the "Vault site: Sync notes" command to copy notes to /site, then use Git to commit and push your changes.',
+        text: 'You can now use the "Vault site: sync notes" command to copy notes to /site, then use Git to commit and push your changes.',
       });
     }
   }

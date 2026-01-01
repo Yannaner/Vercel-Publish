@@ -31,12 +31,11 @@ export class ConfigManager {
   }
 
   private replaceObsidianPath(config: PublishConfig): PublishConfig {
-    // Replace .obsidian with actual configDir
+    // Add vault configDir to exclude list if not already present
     const configDir = this.app.vault.configDir;
-    const exclude = config.exclude.map(path =>
-      // eslint-disable-next-line obsidianmd/hardcoded-config-path
-      path === '.obsidian' ? configDir : path
-    );
+    const exclude = config.exclude.includes(configDir)
+      ? config.exclude
+      : [configDir, ...config.exclude];
     return { ...config, exclude };
   }
 
